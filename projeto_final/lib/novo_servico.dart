@@ -15,9 +15,6 @@ class _NovoServicoState extends State<NovoServico> {
         title: Text('Editor de Serviço'),
         backgroundColor: Color.fromARGB(255, 255, 162, 40),
       ),
-      body: Center(
-        child: Form(child: ),
-      ),
     );
   }
 }

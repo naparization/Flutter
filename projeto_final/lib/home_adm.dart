@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_final/home.dart';
+import 'package:projeto_final/horario_funcionamento.dart';
+
 import 'package:projeto_final/servicos.dart';
 
 class HomeAdmin extends StatefulWidget {
@@ -44,7 +46,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) {
-                      return Home();
+                      return HorarioFuncionamento();
                     },
                   ),
                 );

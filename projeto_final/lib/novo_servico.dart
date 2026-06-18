@@ -2,104 +2,167 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NovoServico extends StatefulWidget {
-  const NovoServico({super.key});
+  final Map<String, dynamic>? servico;
+
+  const NovoServico({super.key, this.servico});
 
   @override
   State<NovoServico> createState() => _NovoServicoState();
 }
 
 class _NovoServicoState extends State<NovoServico> {
-  var formKey = GlobalKey<FormState>();
-  var nomeController = TextEditingController();
-  var valorController = TextEditingController();
-  var descricaoController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+
+  final nomeController = TextEditingController();
+  final valorController = TextEditingController();
+  final descricaoController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.servico != null) {
+      nomeController.text = widget.servico!['nome'];
+      valorController.text = widget.servico!['valor'].toString();
+      descricaoController.text = widget.servico!['descricao'];
+    }
+  }
+
+  @override
+  void dispose() {
+    nomeController.dispose();
+    valorController.dispose();
+    descricaoController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final supabase = Supabase.instance.client;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Editor de Serviço'),
-        backgroundColor: Color.fromARGB(255, 255, 162, 40),
+        backgroundColor: const Color.fromARGB(255, 255, 162, 40),
+        title: Text(
+          widget.servico == null
+              ? "Novo Serviço"
+              : "Editar Serviço",
+        ),
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(20),
         child: Form(
           key: formKey,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 20,
             children: [
               TextFormField(
                 controller: nomeController,
+                decoration: const InputDecoration(
+                  labelText: "Nome",
+                  border: OutlineInputBorder(),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Campo obrigatório.';
+                    return "Informe o nome";
                   }
                   return null;
                 },
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Nome Completo",
-                  hintText: 'Teste',
-                ),
               ),
+
+              const SizedBox(height: 20),
+
               TextFormField(
                 controller: valorController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: "Valor",
+                  border: OutlineInputBorder(),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Campo obrigatório.';
+                    return "Informe o valor";
                   }
                   return null;
                 },
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Valor (R\$)",
-                  hintText: '0,00',
-                ),
               ),
+
+              const SizedBox(height: 20),
+
               TextFormField(
                 controller: descricaoController,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  labelText: "Descrição",
+                  border: OutlineInputBorder(),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Campo obrigatório.';
+                    return "Informe a descrição";
                   }
                   return null;
                 },
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Descrição",
-                ),
               ),
-              ElevatedButton(
-                onPressed: () async {
-                  if (formKey.currentState!.validate()) {
-                    try {
-                      final supabase = Supabase.instance.client;
-                      String valor = valorController.text;
-                      valor = valor.replaceAll(',', '.');
-                      await supabase.from('servicos').insert({
-                        'nome': nomeController.text,
-                        'valor': valor,
-                        'descricao': descricaoController.text,
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("Serviço registrado."),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                      Navigator.of(context).pop();
-                    } catch (e) {
-                      print(e);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("Falha ao criar serviço."),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
+
+              const SizedBox(height: 30),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+
+                    if (!formKey.currentState!.validate()) {
+                      return;
                     }
-                  }
-                },
-                child: Text('data'),
+
+                    try {
+
+                      String valor =
+                          valorController.text.replaceAll(',', '.');
+
+                      if (widget.servico == null) {
+
+                        // CADASTRAR
+                        await supabase.from('servicos').insert({
+                          'nome': nomeController.text,
+                          'valor': valor,
+                          'descricao': descricaoController.text,
+                        });
+
+                      } else {
+
+                        // EDITAR
+                        await supabase
+                            .from('servicos')
+                            .update({
+                              'nome': nomeController.text,
+                              'valor': valor,
+                              'descricao': descricaoController.text,
+                            })
+                            .eq('id', widget.servico!['id']);
+
+                      }
+
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                      }
+
+                    } catch (e) {
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(e.toString()),
+                        ),
+                      );
+
+                    }
+
+                  },
+                  child: Text(
+                    widget.servico == null
+                        ? "Cadastrar"
+                        : "Salvar Alterações",
+                  ),
+                ),
               ),
             ],
           ),

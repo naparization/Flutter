@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:projeto_final/home.dart';
 import 'package:projeto_final/novo_servico.dart';
 
 class Servicos extends StatefulWidget {

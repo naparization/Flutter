@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:projeto_final/home.dart';
 import 'package:projeto_final/utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

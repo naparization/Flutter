@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:projeto_final/telaCadastro.dart';
 import 'package:projeto_final/telaLogin.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

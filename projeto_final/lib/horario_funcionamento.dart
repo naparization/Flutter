@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:projeto_final/home.dart';
 import 'package:projeto_final/novo_horario.dart';
 
 class HorarioFuncionamento extends StatefulWidget {

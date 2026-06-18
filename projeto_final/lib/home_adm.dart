@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:projeto_final/home.dart';
 import 'package:projeto_final/horario_funcionamento.dart';
 
 import 'package:projeto_final/servicos.dart';

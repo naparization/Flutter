@@ -10,7 +10,6 @@ class Servicos extends StatefulWidget {
 }
 
 class _ServicosState extends State<Servicos> {
-
   final supabase = Supabase.instance.client;
 
   List<Map<String, dynamic>> listaServicos = [];
@@ -22,25 +21,22 @@ class _ServicosState extends State<Servicos> {
   }
 
   Future<void> carregarServicos() async {
-  try {
-    final dados = await supabase
-        .from('servicos')
-        .select('*');
+    try {
+      final dados = await supabase.from('servicos').select('*');
 
-    debugPrint(dados.toString());
+      debugPrint(dados.toString());
 
-    setState(() {
-      listaServicos = List<Map<String, dynamic>>.from(dados);
-    });
-  } catch (e) {
-    debugPrint("ERRO: $e");
+      setState(() {
+        listaServicos = List<Map<String, dynamic>>.from(dados);
+      });
+    } catch (e) {
+      debugPrint("ERRO: $e");
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 255, 162, 40),
         title: const Text("Serviços"),
@@ -54,41 +50,40 @@ class _ServicosState extends State<Servicos> {
           itemCount: listaServicos.length,
 
           itemBuilder: (context, index) {
-
             final servico = listaServicos[index];
 
             return Card(
-  child: ListTile(
-    title: Text(
-      servico["nome"],
-      style: const TextStyle(
-        fontWeight: FontWeight.bold,
-      ),
-    ),
+              child: ListTile(
+                title: Text(
+                  servico["nome"],
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
 
-    subtitle: Text(servico["descricao"]),
+                subtitle: Text(servico["descricao"]),
 
-    trailing: Text(
-      "R\$ ${servico["valor"]}",
-      style: const TextStyle(
-        fontSize: 18,
-        color: Colors.green,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
+                trailing: Text(
+                  "R\$ ${servico["valor"]}",
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
 
-    onTap: () async {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => NovoServico(servico: servico),
-        ),
-      );
+                onTap: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => NovoServico(servico: servico),
+                    ),
+                  );
 
-      carregarServicos();
-    },
-  ),
-);
+                  carregarServicos();
+                },
+              ),
+            );
           },
         ),
       ),
@@ -98,7 +93,6 @@ class _ServicosState extends State<Servicos> {
         child: const Icon(Icons.add),
 
         onPressed: () async {
-
           await Navigator.push(
             context,
             MaterialPageRoute(
@@ -107,10 +101,8 @@ class _ServicosState extends State<Servicos> {
           );
 
           carregarServicos();
-
         },
       ),
-
     );
   }
 }

@@ -44,9 +44,7 @@ class _NovoServicoState extends State<NovoServico> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 255, 162, 40),
         title: Text(
-          widget.servico == null
-              ? "Novo Serviço"
-              : "Editar Serviço",
+          widget.servico == null ? "Novo Serviço" : "Editar Serviço",
         ),
       ),
       body: Padding(
@@ -109,28 +107,20 @@ class _NovoServicoState extends State<NovoServico> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
-
                     if (!formKey.currentState!.validate()) {
                       return;
                     }
 
                     try {
-
-                      String valor =
-                          valorController.text.replaceAll(',', '.');
+                      String valor = valorController.text.replaceAll(',', '.');
 
                       if (widget.servico == null) {
-
-                        // CADASTRAR
                         await supabase.from('servicos').insert({
                           'nome': nomeController.text,
                           'valor': valor,
                           'descricao': descricaoController.text,
                         });
-
                       } else {
-
-                        // EDITAR
                         await supabase
                             .from('servicos')
                             .update({
@@ -139,28 +129,21 @@ class _NovoServicoState extends State<NovoServico> {
                               'descricao': descricaoController.text,
                             })
                             .eq('id', widget.servico!['id']);
-
                       }
 
                       if (context.mounted) {
                         Navigator.pop(context);
                       }
-
                     } catch (e) {
-
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(e.toString()),
                         ),
                       );
-
                     }
-
                   },
                   child: Text(
-                    widget.servico == null
-                        ? "Cadastrar"
-                        : "Salvar Alterações",
+                    widget.servico == null ? "Cadastrar" : "Salvar Alterações",
                   ),
                 ),
               ),

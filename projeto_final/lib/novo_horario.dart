@@ -110,40 +110,66 @@ class _NovoHorarioState extends State<NovoHorario> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  if (formKey.currentState!.validate()) {
-                    try {
-                      final supabase = Supabase.instance.client;
-                      await supabase.from('horarios_funcionario').insert({
-                        'horario_inicio': horarioInicio,
-                        'horario_fim': horarioFim,
-                        'dia_semana': diaSemanaId,
-                        'funcionario_id': 1,
-                      });
+                  // 1. Valida o formulário e os campos obrigatórios antes de qualquer coisa
+                  if (!(formKey.currentState!.validate())) return;
+
+                  if (diaSemanaId == null || horarioInicio == null || horarioFim == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Selecione dia da semana, horário início e fim"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
+
+                  final supabase = Supabase.instance.client;
+
+                  // 2. Verifica se já existe horário cadastrado nesse dia para esse funcionário
+                  final horarioEmUso = await supabase.from("horarios_funcionario").select().eq("dia_semana", diaSemanaId!).eq("funcionario_id", 1);
+
+                  if (horarioEmUso.isNotEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Você já tem um horário cadastrado nesse dia"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
+
+                  // 3. Só chega aqui se passou nas duas validações
+                  try {
+                    await supabase.from('horarios_funcionario').insert({
+                      'horario_inicio': horarioInicio,
+                      'horario_fim': horarioFim,
+                      'dia_semana': diaSemanaId,
+                      'funcionario_id': 1,
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Cadastro realizado com sucesso!"),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                  } on PostgrestException catch (e) {
+                    if (e.code == "23505") {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("Cadastro realizado com sucesso!"),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                      Navigator.of(context).pop();
-                    } on PostgrestException catch (e) {
-                      if (e.code != null && e.code == "23505") {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Login já está em uso"),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    } catch (e) {
-                      print(e);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("Falha ao realizar cadastro"),
+                        const SnackBar(
+                          content: Text("Login já está em uso"),
                           backgroundColor: Colors.red,
                         ),
                       );
                     }
+                  } catch (e) {
+                    print(e);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Falha ao realizar cadastro"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
                   }
                 },
                 child: Text("Cadastrar"),

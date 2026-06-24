@@ -102,7 +102,9 @@ class _TelaDeLoginState extends State<TelaDeLogin> {
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
                             builder: (context) {
-                              return Home();
+                              return Home(
+                                usuario: usuarios.first,
+                              );
                             },
                           ),
                         );

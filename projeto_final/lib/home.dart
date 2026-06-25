@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:projeto_final/escolher_servico.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  final Map<String, dynamic> usuario;
+  const Home({super.key, required this.usuario});
 
   @override
   State<Home> createState() => _HomeState();
@@ -31,7 +32,9 @@ class _HomeState extends State<Home> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) {
-                      return Home();
+                      return Home(
+                        usuario: widget.usuario,
+                      );
                     },
                   ),
                 );
@@ -43,7 +46,9 @@ class _HomeState extends State<Home> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) {
-                      return Home();
+                      return Home(
+                        usuario: widget.usuario,
+                      );
                     },
                   ),
                 );
@@ -62,7 +67,9 @@ class _HomeState extends State<Home> {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) {
-                return EscolherServico();
+                return EscolherServico(
+                  usuario: widget.usuario,
+                );
               },
             ),
           );

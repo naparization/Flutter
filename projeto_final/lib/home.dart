@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_final/escolher_servico.dart';
+import 'package:projeto_final/horario_funcionamento.dart';
 
 class Home extends StatefulWidget {
   final Map<String, dynamic> usuario;
-  const Home({super.key, required this.usuario});
+
+  const Home({
+    super.key,
+    required this.usuario,
+  });
 
   @override
   State<Home> createState() => _HomeState();
@@ -14,20 +19,22 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('King Barbearia'),
+        title: const Text('King Barbearia'),
         backgroundColor: const Color.fromARGB(255, 42, 172, 128),
         centerTitle: true,
       ),
       drawer: Drawer(
         child: ListView(
           children: [
-            DrawerHeader(
+            const DrawerHeader(
               child: Column(
-                children: [Text('Tela Administrativa')],
+                children: [
+                  Text('Tela do Funcionário'),
+                ],
               ),
             ),
             ListTile(
-              title: Text("Serviços"),
+              title: const Text("Serviços"),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -41,12 +48,12 @@ class _HomeState extends State<Home> {
               },
             ),
             ListTile(
-              title: Text("Horários"),
+              title: const Text("Horários"),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) {
-                      return Home(
+                      return HorarioFuncionamento(
                         usuario: widget.usuario,
                       );
                     },
@@ -57,9 +64,11 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      body: Center(
+      body: const Center(
         child: Column(
-          children: [Text('Nada por enquanto. (PLACEHOLDER)')],
+          children: [
+            Text('Nada por enquanto. (PLACEHOLDER)'),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(

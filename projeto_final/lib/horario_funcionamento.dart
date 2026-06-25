@@ -3,10 +3,16 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'novo_horario.dart';
 
 class HorarioFuncionamento extends StatefulWidget {
-  const HorarioFuncionamento({super.key});
+  final Map<String, dynamic> usuario;
+
+  const HorarioFuncionamento({
+    super.key,
+    required this.usuario,
+  });
 
   @override
-  State<HorarioFuncionamento> createState() => _HorarioFuncionamentoState();
+  State<HorarioFuncionamento> createState() =>
+      _HorarioFuncionamentoState();
 }
 
 class _HorarioFuncionamentoState extends State<HorarioFuncionamento> {
@@ -22,7 +28,7 @@ class _HorarioFuncionamentoState extends State<HorarioFuncionamento> {
   }
 
   Future<void> carregarHorarios() async {
-    const int funcionarioId = 1;
+    final int funcionarioId = widget.usuario['id'];
 
     final data = await supabase
         .from('horarios_funcionario')
@@ -44,7 +50,6 @@ class _HorarioFuncionamentoState extends State<HorarioFuncionamento> {
         backgroundColor: const Color.fromARGB(255, 255, 162, 40),
         centerTitle: true,
       ),
-
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : horarios.isEmpty
@@ -76,7 +81,6 @@ class _HorarioFuncionamentoState extends State<HorarioFuncionamento> {
                     );
                   },
                 ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.of(context).push(
@@ -85,10 +89,10 @@ class _HorarioFuncionamentoState extends State<HorarioFuncionamento> {
             ),
           );
 
-          // 
           setState(() {
             loading = true;
           });
+
           carregarHorarios();
         },
         backgroundColor: const Color.fromARGB(255, 255, 162, 40),

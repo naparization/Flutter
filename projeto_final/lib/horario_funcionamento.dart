@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:projeto_final/novo_horario.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'novo_horario.dart';
 
 class HorarioFuncionamento extends StatefulWidget {
   const HorarioFuncionamento({super.key});
@@ -9,35 +10,89 @@ class HorarioFuncionamento extends StatefulWidget {
 }
 
 class _HorarioFuncionamentoState extends State<HorarioFuncionamento> {
+  final supabase = Supabase.instance.client;
+
+  List<Map<String, dynamic>> horarios = [];
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    carregarHorarios();
+  }
+
+  Future<void> carregarHorarios() async {
+    const int funcionarioId = 1;
+
+    final data = await supabase
+        .from('horarios_funcionario')
+        .select()
+        .eq('funcionario_id', funcionarioId)
+        .order('dia_semana');
+
+    setState(() {
+      horarios = List<Map<String, dynamic>>.from(data);
+      loading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Horários de Funcionamento'),
+        title: const Text('Horários de Funcionamento'),
         backgroundColor: const Color.fromARGB(255, 255, 162, 40),
         centerTitle: true,
       ),
-      body: Center(
-        child: Column(
-          children: [Text('Nada por enquanto. (PLACEHOLDER)')],
-        ),
-      ),
+
+      body: loading
+          ? const Center(child: CircularProgressIndicator())
+          : horarios.isEmpty
+              ? const Center(
+                  child: Text("Nenhum horário cadastrado"),
+                )
+              : ListView.builder(
+                  itemCount: horarios.length,
+                  itemBuilder: (context, index) {
+                    final h = horarios[index];
+
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      child: ListTile(
+                        leading: const Icon(Icons.access_time),
+                        title: Text(
+                          "Dia: ${h['dia_semana']}",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(
+                          "${h['horario_inicio']} - ${h['horario_fim']}",
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
+        onPressed: () async {
+          await Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) {
-                return NovoHorario();
-              },
+              builder: (context) => const NovoHorario(),
             ),
           );
+
+          // 
+          setState(() {
+            loading = true;
+          });
+          carregarHorarios();
         },
-        tooltip: 'Novo Serviço',
         backgroundColor: const Color.fromARGB(255, 255, 162, 40),
-        child: const Icon(
-          Icons.add,
-          color: Color.fromARGB(255, 139, 89, 22),
-        ),
+        child: const Icon(Icons.add),
       ),
     );
   }

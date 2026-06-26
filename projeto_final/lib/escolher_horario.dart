@@ -1,64 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:projeto_final/escolher_horario.dart';
-import 'package:projeto_final/home.dart';
+import 'package:projeto_final/confirmar_atendimento.dart';
 import 'package:projeto_final/telaLogin.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class EscolherBarbeiro extends StatefulWidget {
+class EscolherHorario extends StatefulWidget {
   final Map<String, dynamic> usuario;
   final Map<String, dynamic> servico;
-  const EscolherBarbeiro({super.key, required this.usuario, required this.servico});
+  final Map<String, dynamic> barbeiro;
+  const EscolherHorario({super.key, required this.barbeiro, required this.servico, required this.usuario});
 
   @override
-  State<EscolherBarbeiro> createState() => _EscolherBarbeiroState();
+  State<EscolherHorario> createState() => _EscolherHorarioState();
 }
 
-class _EscolherBarbeiroState extends State<EscolherBarbeiro> {
+class _EscolherHorarioState extends State<EscolherHorario> {
   final supabase = Supabase.instance.client;
 
-  List<Map<String, dynamic>> listaBarbeiros = [];
-
+  List<Map<String, dynamic>> listaHorarios = [];
   @override
   void initState() {
     super.initState();
-    carregarServicos();
+    carregarHorarios();
   }
 
-  Future<void> carregarServicos() async {
-    final dados = await supabase.from('usuarios').select('*').eq('is_adm', true).eq('inativo', false);
+  Future<void> carregarHorarios() async {
+    final dados = await supabase
+        .from('horarios_funcionario')
+        .select('*, dias_semana(nome)')
+        .eq('funcionario_id', widget.barbeiro['id'])
+        .eq('disponivel', true)
+        .order('dia_semana', ascending: true);
     setState(() {
-      listaBarbeiros = List<Map<String, dynamic>>.from(dados);
+      listaHorarios = List<Map<String, dynamic>>.from(dados);
     });
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Escolher Barbeiro'),
+        title: Text('Escolher Horário'),
         backgroundColor: const Color.fromARGB(255, 42, 172, 128),
       ),
       body: Column(
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: listaBarbeiros.length,
+              itemCount: listaHorarios.length,
               itemBuilder: (context, index) {
-                final barbeiro = listaBarbeiros[index];
+                final horario = listaHorarios[index];
                 return Card(
                   child: ListTile(
-                    title: Text(
-                      barbeiro["nome"],
+                    title: Text('${horario["dias_semana"]?["nome"] ?? "Não declarado"}'),
+                    subtitle: Text(
+                      '${horario["horario_inicio"]}',
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) {
-                            return EscolherHorario(
+                            return ConfirmarAtendimento(
                               usuario: widget.usuario,
+                              horario: horario,
+                              barbeiro: widget.barbeiro,
                               servico: widget.servico,
-                              barbeiro: barbeiro,
                             );
                           },
                         ),

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_final/horario_funcionamento.dart';
-
 import 'package:projeto_final/servicos.dart';
 
 class HomeAdmin extends StatefulWidget {
   final Map<String, dynamic> usuario;
-  const HomeAdmin({super.key, required this.usuario});
+
+  const HomeAdmin({
+    super.key,
+    required this.usuario,
+  });
 
   @override
   State<HomeAdmin> createState() => _HomeAdminState();
@@ -16,36 +19,40 @@ class _HomeAdminState extends State<HomeAdmin> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('King Barbearia'),
+        title: const Text('King Barbearia'),
         backgroundColor: const Color.fromARGB(255, 255, 162, 40),
       ),
       drawer: Drawer(
         child: ListView(
           children: [
-            DrawerHeader(
+            const DrawerHeader(
               child: Column(
-                children: [Text('Tela Administrativa')],
+                children: [
+                  Text('Tela Administrativa'),
+                ],
               ),
             ),
             ListTile(
-              title: Text("Serviços"),
+              title: const Text("Serviços"),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) {
-                      return Servicos();
+                      return const Servicos();
                     },
                   ),
                 );
               },
             ),
             ListTile(
-              title: Text("Horários"),
+              title: const Text("Horários"),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) {
-                      return HorarioFuncionamento();
+                      return HorarioFuncionamento(
+                        usuario: widget.usuario,
+                      );
                     },
                   ),
                 );
@@ -55,7 +62,7 @@ class _HomeAdminState extends State<HomeAdmin> {
         ),
       ),
       body: Center(
-        child: Text('${widget.usuario["nome"]}'),
+        child: Text(widget.usuario["nome"]),
       ),
     );
   }

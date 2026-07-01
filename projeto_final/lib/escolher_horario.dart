@@ -52,7 +52,7 @@ class _EscolherHorarioState extends State<EscolherHorario> {
                   child: ListTile(
                     title: Text('${horario["dias_semana"]?["nome"] ?? "Não declarado"}'),
                     subtitle: Text(
-                      '${horario["horario_inicio"]}',
+                      '${horario["horario_inicio"]}:00 - ${horario["horario_inicio"] + 1}:00',
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     onTap: () {

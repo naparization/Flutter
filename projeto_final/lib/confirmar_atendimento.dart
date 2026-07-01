@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projeto_final/telaCadastro.dart';
 
 class ConfirmarAtendimento extends StatefulWidget {
   final Map<String, dynamic> usuario;
@@ -58,7 +59,18 @@ class _ConfirmarAtendimentoState extends State<ConfirmarAtendimento> {
             ),
           ),
           ElevatedButton(onPressed: () {}, child: Text('Confirmar')),
-          ElevatedButton(onPressed: () {}, child: Text('Cancelar')),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return TelaDeCadastro();
+                  },
+                ),
+              );
+            },
+            child: Text("Cancelar"),
+          ),
         ],
       ),
     );

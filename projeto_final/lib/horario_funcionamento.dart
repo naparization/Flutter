@@ -11,8 +11,7 @@ class HorarioFuncionamento extends StatefulWidget {
   });
 
   @override
-  State<HorarioFuncionamento> createState() =>
-      _HorarioFuncionamentoState();
+  State<HorarioFuncionamento> createState() => _HorarioFuncionamentoState();
 }
 
 class _HorarioFuncionamentoState extends State<HorarioFuncionamento> {
@@ -30,11 +29,7 @@ class _HorarioFuncionamentoState extends State<HorarioFuncionamento> {
   Future<void> carregarHorarios() async {
     final int funcionarioId = widget.usuario['id'];
 
-    final data = await supabase
-        .from('horarios_funcionario')
-        .select()
-        .eq('funcionario_id', funcionarioId)
-        .order('dia_semana');
+    final data = await supabase.from('horarios_funcionario').select().eq('funcionario_id', funcionarioId).order('dia_semana');
 
     setState(() {
       horarios = List<Map<String, dynamic>>.from(data);
@@ -53,39 +48,41 @@ class _HorarioFuncionamentoState extends State<HorarioFuncionamento> {
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : horarios.isEmpty
-              ? const Center(
-                  child: Text("Nenhum horário cadastrado"),
-                )
-              : ListView.builder(
-                  itemCount: horarios.length,
-                  itemBuilder: (context, index) {
-                    final h = horarios[index];
+          ? const Center(
+              child: Text("Nenhum horário cadastrado"),
+            )
+          : ListView.builder(
+              itemCount: horarios.length,
+              itemBuilder: (context, index) {
+                final h = horarios[index];
 
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
+                return Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  child: ListTile(
+                    leading: const Icon(Icons.access_time),
+                    title: Text(
+                      "Dia: ${h['dia_semana']}",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
                       ),
-                      child: ListTile(
-                        leading: const Icon(Icons.access_time),
-                        title: Text(
-                          "Dia: ${h['dia_semana']}",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        subtitle: Text(
-                          "${h['horario_inicio']} - ${h['horario_fim']}",
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                    ),
+                    subtitle: Text(
+                      "${h['horario_inicio']}:00 - ${h['horario_fim']}:00",
+                    ),
+                  ),
+                );
+              },
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => const NovoHorario(),
+              builder: (context) => NovoHorario(
+                usuario: widget.usuario,
+              ),
             ),
           );
 

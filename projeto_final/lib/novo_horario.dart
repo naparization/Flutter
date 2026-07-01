@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NovoHorario extends StatefulWidget {
-  const NovoHorario({super.key});
+  final Map<String, dynamic> usuario;
+  const NovoHorario({super.key, required this.usuario});
 
   @override
   State<NovoHorario> createState() => _NovoHorarioState();
@@ -141,10 +142,10 @@ class _NovoHorarioState extends State<NovoHorario> {
                   // 3. Só chega aqui se passou nas duas validações
                   try {
                     await supabase.from('horarios_funcionario').insert({
-                      'horario_inicio': horarioInicio,
-                      'horario_fim': horarioFim,
+                      'horario_inicio': horarioInicio!.substring(0, 2),
+                      'horario_fim': horarioFim!.substring(0, 2),
                       'dia_semana': diaSemanaId,
-                      'funcionario_id': 1,
+                      'funcionario_id': widget.usuario['id'],
                     });
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_final/escolher_horario.dart';
-import 'package:projeto_final/home.dart';
-import 'package:projeto_final/telaLogin.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EscolherBarbeiro extends StatefulWidget {

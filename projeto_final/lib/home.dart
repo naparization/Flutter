@@ -29,7 +29,7 @@ class _HomeState extends State<Home> {
             const DrawerHeader(
               child: Column(
                 children: [
-                  Text('Tela do Funcionário'),
+                  Text('Tela do Usuário'),
                 ],
               ),
             ),
@@ -53,7 +53,7 @@ class _HomeState extends State<Home> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) {
-                      return HorarioFuncionamento(
+                      return Home(
                         usuario: widget.usuario,
                       );
                     },

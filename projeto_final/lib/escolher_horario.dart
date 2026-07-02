@@ -26,15 +26,32 @@ class _EscolherHorarioState extends State<EscolherHorario> {
   Future<void> carregarHorarios() async {
     final dados = await supabase
         .from('horarios_funcionario')
-        .select('*, dias_semana(nome)')
+        .select('*, dias_semana(id, nome)')
         .eq('funcionario_id', widget.barbeiro['id'])
         .eq('disponivel', true)
         .order('dia_semana', ascending: true);
+
+    List<Map<String, dynamic>> horariosExpandidos = [];
+
+    for (final linha in dados) {
+      final inicio = linha['horario_inicio'] as int;
+      final fim = linha['horario_fim'] as int;
+
+      for (int hora = inicio; hora < fim; hora++) {
+        horariosExpandidos.add({
+          ...linha,
+          'horario_inicio': hora,
+          'horario_fim': hora + 1,
+        });
+      }
+    }
+
     setState(() {
-      listaHorarios = List<Map<String, dynamic>>.from(dados);
+      listaHorarios = horariosExpandidos;
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

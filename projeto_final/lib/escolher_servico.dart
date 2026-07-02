@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_final/escolher_barbeiro.dart';
-import 'package:projeto_final/home.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EscolherServico extends StatefulWidget {

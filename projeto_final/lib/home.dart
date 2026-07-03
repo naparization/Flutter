@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_final/escolher_servico.dart';
 import 'package:projeto_final/horario_funcionamento.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Home extends StatefulWidget {
   final Map<String, dynamic> usuario;
@@ -15,7 +16,24 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final supabase = Supabase.instance.client;
+
+  List<Map<String, dynamic>> listaAtendimentos = [];
   @override
+  void initState() {
+    super.initState();
+    carregarServicos();
+  }
+
+  Future<void> carregarServicos() async {
+    final dados = await supabase.from('atendimento').select('*').eq('id_usuario', widget.usuario['id']).eq('finalizado', false);
+
+    setState(() {
+      listaAtendimentos = dados;
+      print(listaAtendimentos);
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -64,10 +82,37 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           children: [
-            Text('Nada por enquanto. (PLACEHOLDER)'),
+            Padding(
+              padding: const EdgeInsets.all(60.0),
+
+              child: Card(
+                child: ListTile(
+                  title: Text(widget.usuario['nome']),
+                  subtitle: Text('Usuário'),
+                  minLeadingWidth: 50,
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: listaAtendimentos.length,
+                itemBuilder: (context, index) {
+                  final horario = listaAtendimentos[index];
+                  return Card(
+                    child: ListTile(
+                      title: Text('#${horario['id']} -'),
+                      subtitle: Text(
+                        'placeholder',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),

@@ -52,7 +52,7 @@ class _HomeState extends State<Home> {
               ),
             ),
             ListTile(
-              title: const Text("Serviços"),
+              title: const Text("Placeholder"),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -66,7 +66,7 @@ class _HomeState extends State<Home> {
               },
             ),
             ListTile(
-              title: const Text("Horários"),
+              title: const Text("Placeholder"),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(

@@ -32,6 +32,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                 ],
               ),
             ),
+
             ListTile(
               title: const Text("Serviços"),
               onTap: () {
@@ -62,7 +63,22 @@ class _HomeAdminState extends State<HomeAdmin> {
         ),
       ),
       body: Center(
-        child: Text(widget.usuario["nome"]),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(60.0),
+
+              child: Card(
+                child: ListTile(
+                  title: Text(widget.usuario['nome']),
+                  subtitle: Text('Barbeiro'),
+                  minLeadingWidth: 50,
+                ),
+              ),
+            ),
+            // TODO
+          ],
+        ),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_final/horario_funcionamento.dart';
 import 'package:projeto_final/servicos.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomeAdmin extends StatefulWidget {
   final Map<String, dynamic> usuario;
@@ -15,6 +16,28 @@ class HomeAdmin extends StatefulWidget {
 }
 
 class _HomeAdminState extends State<HomeAdmin> {
+  final supabase = Supabase.instance.client;
+
+  List<Map<String, dynamic>> listaAtendimentos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    carregarServicos();
+  }
+
+  Future<void> carregarServicos() async {
+    final dados = await supabase
+        .from('atendimento')
+        .select('*, cliente:usuarios!atendimento_id_usuario_fkey(*), servicos(nome), dias_semana(nome)')
+        .eq('id_barbeiro', widget.usuario['id'])
+        .eq('finalizado', false);
+
+    setState(() {
+      listaAtendimentos = dados;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +55,6 @@ class _HomeAdminState extends State<HomeAdmin> {
                 ],
               ),
             ),
-
             ListTile(
               title: const Text("Serviços"),
               onTap: () {
@@ -67,16 +89,89 @@ class _HomeAdminState extends State<HomeAdmin> {
           children: [
             Padding(
               padding: const EdgeInsets.all(60.0),
-
               child: Card(
                 child: ListTile(
                   title: Text(widget.usuario['nome']),
-                  subtitle: Text('Barbeiro'),
+                  subtitle: Text('Barbeiro | Comissão: ${widget.usuario['comissao']}'),
                   minLeadingWidth: 50,
                 ),
               ),
             ),
-            // TODO
+            Expanded(
+              child: ListView.builder(
+                itemCount: listaAtendimentos.length,
+                itemBuilder: (context, index) {
+                  final horario = listaAtendimentos[index];
+                  return Card(
+                    child: ListTile(
+                      title: Text(
+                          '#${horario['id']} - ${horario['servicos']['nome']}'),
+                      subtitle: Text(
+                        '${horario['cliente']['nome']} | ${horario['dias_semana']['nome']} ${horario['horario_inicio']}:00 - ${horario['horario_fim']}:00',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            onPressed: () async {
+                              try {
+                                await supabase
+                                    .from('atendimento')
+                                    .update({'finalizado': true}).eq(
+                                        'id', horario['id']);
+                                carregarServicos();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Agendamento Finalizado."),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Ocorreu um erro."),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            },
+                            icon: const Icon(Icons.check, color: Colors.green),
+                            tooltip: 'Finalizar Agendamento',
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              try {
+                                await supabase
+                                    .from('atendimento')
+                                    .delete()
+                                    .eq('id', horario['id']);
+                                carregarServicos();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Agendamento cancelado."),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Ocorreu um erro."),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            },
+                            icon: const Icon(Icons.cancel, color: Colors.red),
+                            tooltip: 'Cancelar Agendamento',
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),

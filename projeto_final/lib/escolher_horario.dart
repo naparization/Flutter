@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_final/confirmar_atendimento.dart';
-import 'package:projeto_final/telaLogin.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EscolherHorario extends StatefulWidget {
@@ -36,7 +35,7 @@ class _EscolherHorarioState extends State<EscolherHorario> {
     for (final linha in dados) {
       final inicio = linha['horario_inicio'] as int;
       final fim = linha['horario_fim'] as int;
-
+      
       for (int hora = inicio; hora < fim; hora++) {
         horariosExpandidos.add({
           ...linha,

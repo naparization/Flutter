@@ -70,7 +70,8 @@ class _ConfirmarAtendimentoState extends State<ConfirmarAtendimento> {
                   .eq('id_barbeiro', widget.barbeiro['id'])
                   .gte('horario_inicio', widget.horario['horario_inicio'])
                   .lte('horario_fim', widget.horario['horario_fim'])
-                  .eq('id_dia_semana', widget.horario["dias_semana"]["id"]);
+                  .eq('id_dia_semana', widget.horario["dias_semana"]["id"])
+                  .eq('finalizado', false);
               if (horarioEmUso.isEmpty) {
                 await supabase.from('atendimento').insert({
                   'id_usuario': widget.usuario['id'],

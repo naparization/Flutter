@@ -23,19 +23,19 @@ class _HorarioFuncionamentoState extends State<HorarioFuncionamento> {
 
   String nomeDia(int dia) {
     switch (dia) {
-      case 1:
-        return 'Segunda-feira';
       case 2:
-        return 'Terça-feira';
+        return 'Segunda-feira';
       case 3:
-        return 'Quarta-feira';
+        return 'Terça-feira';
       case 4:
-        return 'Quinta-feira';
+        return 'Quarta-feira';
       case 5:
-        return 'Sexta-feira';
+        return 'Quinta-feira';
       case 6:
-        return 'Sábado';
+        return 'Sexta-feira';
       case 7:
+        return 'Sábado';
+      case 8:
         return 'Domingo';
       default:
         return 'Dia inválido';

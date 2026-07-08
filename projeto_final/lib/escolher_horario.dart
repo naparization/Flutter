@@ -35,7 +35,7 @@ class _EscolherHorarioState extends State<EscolherHorario> {
     for (final linha in dados) {
       final inicio = linha['horario_inicio'] as int;
       final fim = linha['horario_fim'] as int;
-      
+
       for (int hora = inicio; hora < fim; hora++) {
         horariosExpandidos.add({
           ...linha,

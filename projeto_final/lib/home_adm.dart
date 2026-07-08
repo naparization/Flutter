@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_final/horario_funcionamento.dart';
 import 'package:projeto_final/servicos.dart';
+import 'package:projeto_final/telaLogin.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomeAdmin extends StatefulWidget {
@@ -81,6 +82,18 @@ class _HomeAdminState extends State<HomeAdmin> {
                 );
               },
             ),
+            ListTile(
+              title: const Text("Logout"),
+              onTap: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return TelaDeLogin();
+                    },
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -92,7 +105,7 @@ class _HomeAdminState extends State<HomeAdmin> {
               child: Card(
                 child: ListTile(
                   title: Text(widget.usuario['nome']),
-                  subtitle: Text('Barbeiro | Comissão: ${widget.usuario['comissao']}'),
+                  subtitle: Text('Barbeiro | Comissão: R\$${widget.usuario['comissao']}'),
                   minLeadingWidth: 50,
                 ),
               ),
@@ -104,8 +117,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                   final horario = listaAtendimentos[index];
                   return Card(
                     child: ListTile(
-                      title: Text(
-                          '#${horario['id']} - ${horario['servicos']['nome']}'),
+                      title: Text('#${horario['id']} - ${horario['servicos']['nome']}'),
                       subtitle: Text(
                         '${horario['cliente']['nome']} | ${horario['dias_semana']['nome']} ${horario['horario_inicio']}:00 - ${horario['horario_fim']}:00',
                         style: const TextStyle(fontWeight: FontWeight.bold),
@@ -116,10 +128,12 @@ class _HomeAdminState extends State<HomeAdmin> {
                           IconButton(
                             onPressed: () async {
                               try {
+                                double comissao = horario['servicos']['valor'] * 0.20;
+                                await supabase.from('atendimento').update({'finalizado': true}).eq('id', horario['id']);
                                 await supabase
-                                    .from('atendimento')
-                                    .update({'finalizado': true}).eq(
-                                        'id', horario['id']);
+                                    .from('usuarios')
+                                    .update({'comissao': horario['barbeiro']['comissao'] + comissao})
+                                    .eq('id', horario['barbeiro']['id']);
                                 carregarServicos();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
@@ -142,10 +156,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                           IconButton(
                             onPressed: () async {
                               try {
-                                await supabase
-                                    .from('atendimento')
-                                    .delete()
-                                    .eq('id', horario['id']);
+                                await supabase.from('atendimento').delete().eq('id', horario['id']);
                                 carregarServicos();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(

@@ -57,7 +57,7 @@ class _HomeState extends State<Home> {
               ),
             ),
             ListTile(
-              title: const Text("Serviços anteriores."),
+              title: const Text("Serviços anteriores"),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -143,33 +143,6 @@ class _HomeState extends State<Home> {
                               color: Colors.green,
                             ),
                             tooltip: 'Finalizar Agendamento',
-                          ),
-
-                          IconButton(
-                            onPressed: () async {
-                              try {
-                                await supabase.from('atendimento').delete().eq('id', horario['id']);
-                                carregarServicos();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text("Agendamento cancelado."),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                              } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text("Ocorreu um erro."),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              }
-                            },
-                            icon: Icon(
-                              Icons.cancel,
-                              color: Colors.red,
-                            ),
-                            tooltip: 'Cancelar Agendamento',
                           ),
                         ],
                       ),

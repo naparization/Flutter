@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_final/telaLogin.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,7 +11,7 @@ void main() async {
     publishableKey: "sb_publishable_mxAmFL8aor93bnwflTrNuA_43mm8XO5",
     //9mbmyuOYKYvVH4Wc senha database
   );
-
+  await initializeDateFormatting('pt_BR', null);
   runApp(const MyApp());
 }
 

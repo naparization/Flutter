@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:projeto_final/home.dart';
 import 'package:projeto_final/telaCadastro.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -8,7 +9,15 @@ class ConfirmarAtendimento extends StatefulWidget {
   final Map<String, dynamic> servico;
   final Map<String, dynamic> barbeiro;
   final Map<String, dynamic> horario;
-  const ConfirmarAtendimento({super.key, required this.barbeiro, required this.horario, required this.servico, required this.usuario});
+  final DateTime diaDoMes;
+  const ConfirmarAtendimento({
+    super.key,
+    required this.barbeiro,
+    required this.horario,
+    required this.servico,
+    required this.usuario,
+    required this.diaDoMes,
+  });
 
   @override
   State<ConfirmarAtendimento> createState() => _ConfirmarAtendimentoState();
@@ -17,6 +26,9 @@ class ConfirmarAtendimento extends StatefulWidget {
 class _ConfirmarAtendimentoState extends State<ConfirmarAtendimento> {
   @override
   Widget build(BuildContext context) {
+    final dataFormatada = DateFormat('yyyy-MM-dd').format(widget.diaDoMes);
+    final dataExibicao = DateFormat('EEEE, dd/MM/yyyy', 'pt_BR').format(widget.diaDoMes);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Confirmar Informações'),
@@ -51,11 +63,11 @@ class _ConfirmarAtendimentoState extends State<ConfirmarAtendimento> {
           Card(
             child: ListTile(
               title: Text(
-                'Horário:',
+                'Data e Horário:',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Text(
-                '${widget.horario["dias_semana"]?["nome"]} | ${widget.horario['horario_inicio']}:00 - ${widget.horario['horario_fim']}:00',
+                '$dataExibicao | ${widget.horario['horario_inicio']}:00 - ${widget.horario['horario_fim']}:00',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -68,10 +80,11 @@ class _ConfirmarAtendimentoState extends State<ConfirmarAtendimento> {
                   .from('atendimento')
                   .select('id')
                   .eq('id_barbeiro', widget.barbeiro['id'])
+                  .eq('dia_do_mes', dataFormatada)
                   .gte('horario_inicio', widget.horario['horario_inicio'])
                   .lte('horario_fim', widget.horario['horario_fim'])
-                  .eq('id_dia_semana', widget.horario["dias_semana"]["id"])
                   .eq('finalizado', false);
+
               if (horarioEmUso.isEmpty) {
                 await supabase.from('atendimento').insert({
                   'id_usuario': widget.usuario['id'],
@@ -80,6 +93,7 @@ class _ConfirmarAtendimentoState extends State<ConfirmarAtendimento> {
                   'id_dia_semana': widget.horario["dias_semana"]["id"],
                   'horario_inicio': widget.horario['horario_inicio'],
                   'horario_fim': widget.horario['horario_fim'],
+                  'dia_do_mes': dataFormatada,
                 });
 
                 ScaffoldMessenger.of(context).showSnackBar(

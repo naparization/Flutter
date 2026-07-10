@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:projeto_final/escolher_servico.dart';
 import 'package:projeto_final/servicos_anteriores.dart';
 import 'package:projeto_final/telaLogin.dart';
+import 'package:projeto_final/todos_os_servicos.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Home extends StatefulWidget {
@@ -31,7 +32,8 @@ class _HomeState extends State<Home> {
         .from('atendimento')
         .select('*, barbeiro:usuarios!atendimento_id_barbeiro_fkey(*), servicos(nome, valor), dias_semana(nome)')
         .eq('id_usuario', widget.usuario['id'])
-        .eq('finalizado', false);
+        .eq('finalizado', false)
+        .eq('dia_do_mes', DateTime.now());
 
     setState(() {
       listaAtendimentos = dados;
@@ -69,6 +71,18 @@ class _HomeState extends State<Home> {
               },
             ),
             ListTile(
+              title: const Text("Meus Agendamentos"),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return TodosOsServicos(usuario: widget.usuario);
+                    },
+                  ),
+                );
+              },
+            ),
+            ListTile(
               title: const Text("Logout"),
               onTap: () {
                 Navigator.of(context).pushReplacement(
@@ -97,6 +111,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
+            Text('Serviços Hoje:'),
             Expanded(
               child: ListView.builder(
                 itemCount: listaAtendimentos.length,
@@ -106,7 +121,7 @@ class _HomeState extends State<Home> {
                     child: ListTile(
                       title: Text('#${horario['id']} - ${horario['servicos']['nome']}'),
                       subtitle: Text(
-                        '${horario['barbeiro']['nome']} | ${horario['dias_semana']['nome']} ${horario['horario_inicio']}:00 - ${horario['horario_fim']}:00 | R\$${horario['servicos']['valor']}',
+                        '${horario['barbeiro']['nome']} | ${horario['dia_do_mes']} | ${horario['dias_semana']['nome']} ${horario['horario_inicio']}:00 - ${horario['horario_fim']}:00 | R\$${horario['servicos']['valor']}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       trailing: Row(
@@ -115,34 +130,25 @@ class _HomeState extends State<Home> {
                           IconButton(
                             onPressed: () async {
                               try {
-                                double comissao = horario['servicos']['valor'] * 0.20;
-                                await supabase.from('atendimento').update({'finalizado': true}).eq('id', horario['id']);
-                                await supabase
-                                    .from('usuarios')
-                                    .update({'comissao': horario['barbeiro']['comissao'] + comissao})
-                                    .eq('id', horario['barbeiro']['id']);
+                                await supabase.from('atendimento').delete().eq('id', horario['id']);
                                 carregarServicos();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text("Agendamento Finalizado."),
+                                    content: Text("Agendamento cancelado."),
                                     backgroundColor: Colors.green,
                                   ),
                                 );
                               } catch (e) {
-                                print(e);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('aaa'),
+                                    content: Text("Ocorreu um erro."),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
                               }
                             },
-                            icon: Icon(
-                              Icons.check,
-                              color: Colors.green,
-                            ),
-                            tooltip: 'Finalizar Agendamento',
+                            icon: const Icon(Icons.cancel, color: Colors.red),
+                            tooltip: 'Cancelar Agendamento',
                           ),
                         ],
                       ),

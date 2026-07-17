@@ -30,9 +30,10 @@ class _HomeAdminState extends State<HomeAdmin> {
   Future<void> carregarServicos() async {
     final dados = await supabase
         .from('atendimento')
-        .select('*, cliente:usuarios!atendimento_id_usuario_fkey(*), servicos(nome), dias_semana(nome)')
+        .select('*, cliente:usuarios!atendimento_id_usuario_fkey(*), servicos(nome, valor), dias_semana(nome)')
         .eq('id_barbeiro', widget.usuario['id'])
-        .eq('finalizado', false);
+        .eq('finalizado', false)
+        .eq('dia_do_mes', DateTime.now());
 
     setState(() {
       listaAtendimentos = dados;
@@ -132,8 +133,8 @@ class _HomeAdminState extends State<HomeAdmin> {
                                 await supabase.from('atendimento').update({'finalizado': true}).eq('id', horario['id']);
                                 await supabase
                                     .from('usuarios')
-                                    .update({'comissao': horario['barbeiro']['comissao'] + comissao})
-                                    .eq('id', horario['barbeiro']['id']);
+                                    .update({'comissao': widget.usuario['comissao'] + comissao})
+                                    .eq('id', widget.usuario['id']);
                                 carregarServicos();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
@@ -142,6 +143,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                                   ),
                                 );
                               } catch (e) {
+                                print(e);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text("Ocorreu um erro."),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:projeto_final/escolher_servico.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ServicosAnteriores extends StatefulWidget {

@@ -1,31 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_final/home.dart';
 import 'package:projeto_final/home_adm.dart';
-import 'package:projeto_final/recuperar_senha.dart';
 import 'package:projeto_final/telaCadastro.dart';
+import 'package:projeto_final/telaLogin.dart';
 import 'package:projeto_final/utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class TelaDeLogin extends StatefulWidget {
-  const TelaDeLogin({super.key});
+class RecuperarSenha extends StatefulWidget {
+  const RecuperarSenha({super.key});
 
   @override
-  State<TelaDeLogin> createState() => _TelaDeLoginState();
+  State<RecuperarSenha> createState() => _RecuperarSenhaState();
 }
 
-class _TelaDeLoginState extends State<TelaDeLogin> {
+class _RecuperarSenhaState extends State<RecuperarSenha> {
   var CPFController = TextEditingController();
   var senhaController = TextEditingController();
   var formKey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tela Login'),
         backgroundColor: Colors.teal,
         titleTextStyle: TextStyle(color: const Color.fromARGB(255, 255, 255, 255), fontSize: 20),
-        centerTitle: true,
+        title: Text('Recuperar Senha'),
       ),
       body: Center(
         child: SizedBox(
@@ -75,11 +73,7 @@ class _TelaDeLoginState extends State<TelaDeLogin> {
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
                         final supabase = Supabase.instance.client;
-                        final usuarios = await supabase
-                            .from("usuarios")
-                            .select()
-                            .eq("cpf", CPFController.text)
-                            .eq("senha", Utils.gerarMd5(senhaController.text));
+                        final usuarios = await supabase.from("usuarios").select().eq("cpf", CPFController.text);
                         if (usuarios.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -88,59 +82,25 @@ class _TelaDeLoginState extends State<TelaDeLogin> {
                             ),
                           );
                         } else {
+                          final senha = Utils.gerarMd5(senhaController.text);
+                          await supabase.from('usuarios').update({'senha': senha}).eq('cpf', CPFController.text);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text("Usuário autenticado com sucesso"),
+                              content: Text("Senha alterada com sucesso."),
                               backgroundColor: Colors.green,
                             ),
                           );
-                          if (usuarios.first["is_adm"]) {
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return HomeAdmin(usuario: usuarios.first);
-                                },
-                              ),
-                            );
-                          } else {
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return Home(
-                                    usuario: usuarios.first,
-                                  );
-                                },
-                              ),
-                            );
-                          }
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return TelaDeLogin();
+                              },
+                            ),
+                          );
                         }
                       }
                     },
-                    child: Text("Entrar"),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return TelaDeCadastro();
-                          },
-                        ),
-                      );
-                    },
-                    child: Text("Cadastre-se"),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return RecuperarSenha();
-                          },
-                        ),
-                      );
-                    },
-                    child: Text("\"Esqueci minha senha.\""),
+                    child: Text("Atualizar"),
                   ),
                 ],
               ),

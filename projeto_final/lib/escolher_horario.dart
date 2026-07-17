@@ -33,11 +33,8 @@ class _EscolherHorarioState extends State<EscolherHorario> {
     carregarHorarios();
   }
 
-  // Converte o weekday do Dart (1=Segunda ... 7=Domingo)
-  // para o padrão da tabela dias_semana (ajuste se o seu for diferente,
-  // ex: 0=Domingo ... 6=Sábado)
   int converterParaIdDiaSemana(DateTime data) {
-    return data.weekday == 7 ? 0 : data.weekday;
+    return data.weekday + 1;
   }
 
   Future<void> carregarHorarios() async {
